@@ -17,50 +17,39 @@ LDFLAGS="-flto=thin -fembed-bitcode -mmacosx-version-min=10.9 --sysroot=${SDKROO
 CC=clang
 CXX=clang++
 
-decompress_pkg() {
+build() {
   tar -xJvf $1$suffix
-}
-
-make_install() {
+  pushd $1
+  args=("$@")
+  ./configure ${args[@]:1}
   make -j
   sudo make install
+  popd
 }
 
-decompress_pkg $autoconf_pkg
-pushd $autoconf_pkg
-./configure CC=$CC CXX=$CXX \
-            CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-            LDFLAGS=$LDFLAGS \
-            --prefix=$install_prefix
-make_install
-popd
+build $autoconf_pkg \
+        CC=$CC CXX=$CXX \
+        CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+        LDFLAGS=$LDFLAGS \
+        --prefix=$install_prefix
 
-decompress_pkg $automake_pkg
-pushd $automake_pkg
-./configure CC=$CC CXX=$CXX \
-            CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-            LDFLAGS=$LDFLAGS \
-            --prefix=$install_prefix
-make_install
-popd
+build $automake_pkg \
+        CC=$CC CXX=$CXX \
+        CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+        LDFLAGS=$LDFLAGS \
+        --prefix=$install_prefix
 
-decompress_pkg $libtool_pkg
-pushd $libtool_pkg
-./configure CC=$CC CXX=$CXX \
-            CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-            LDFLAGS=$LDFLAGS \
-            --program-prefix=g \
-            --enable-shared=no \
-            --prefix=$install_prefix
-make_install
-popd
+build $libtool_pkg \
+        CC=$CC CXX=$CXX \
+        CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+        LDFLAGS=$LDFLAGS \
+        --program-prefix=g \
+        --enable-shared=no \
+        --prefix=$install_prefix
 
-decompress_pkg $gettext_pkg
-pushd $gettext_pkg
-./configure CC=$CC CXX=$CXX \
-            CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-            LDFLAGS=$LDFLAGS \
-            --enable-shared=no \
-            --prefix=$install_prefix
-make_install
-popd
+build $gettext_pkg \
+        CC=$CC CXX=$CXX \
+        CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+        LDFLAGS=$LDFLAGS \
+        --enable-shared=no \
+        --prefix=$install_prefix
