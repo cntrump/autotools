@@ -6,6 +6,8 @@ Build and install autotools on macOS without any package managers.
 - [automake](https://www.gnu.org/software/automake/)
 - [libtool](https://www.gnu.org/software/automake/) (by adding prefix `g`: `glibtool`)
 - [gettext](https://www.gnu.org/software/gettext/)
+    - depend on [bison](https://www.gnu.org/software/bison/) 
+- [pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config)
 
 ## Build and install
 
@@ -23,14 +25,15 @@ Install to `/usr/local`
 
 ## Use GNU Libtool
 
-```
+Build pkg-config from source:
+
+```bash
 export LIBTOOLIZE=glibtoolize
-$LIBTOOLIZE --version
-```
 
-Or
-
-```
-export libtoolize=glibtoolize
-$libtoolize
+pushd pkg-config
+./autogen.sh --no-configure
+./configure --with-internal-glib
+make -j
+make install
+popd
 ```

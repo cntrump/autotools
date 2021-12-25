@@ -1,0 +1,24 @@
+name: "autotools CI"
+on: 
+  push:
+    branches:
+      - main 
+      - master
+  pull_request:
+    branches: 
+      - '*'
+jobs:
+  macOS:
+    name: Build on  macOS
+    runs-on: macos-latest
+    env:
+      INSTALL_PREFIX: /opt/local
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build
+        run: ./build_and_install.sh
+      - name: Test
+        run: |
+            ls $INSTALL_PREFIX/bin
+            ls $INSTALL_PREFIX/lib
