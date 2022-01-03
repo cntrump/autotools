@@ -15,6 +15,8 @@ automake_pkg="automake-1.16.5"
 libtool_pkg="libtool-2.4.6"
 bison_pkg="bison-3.8.2"
 gettext_pkg="gettext-0.21"
+patch_pkg="patch-2.7.6"
+tar_pkg="tar-1.34"
 
 SDKROOT=`xcrun --sdk macosx --show-sdk-path`
 CFLAGS="-arch arm64 -arch x86_64 -flto=thin -fembed-bitcode -mmacosx-version-min=10.9 --sysroot=${SDKROOT}"
@@ -24,7 +26,7 @@ CC=clang
 CXX=clang++
 
 unzip_and_build() {
-  tar -xJvf $1$suffix
+  tar xvf $1$suffix
   pushd $1
   args=("$@")
   ./configure ${args[@]:1}
@@ -83,3 +85,18 @@ pushd pkg-config
 make -j
 sudo make install
 popd
+
+unzip_and_build $patch_pkg \
+                CC=$CC CXX=$CXX \
+                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+                LDFLAGS=$LDFLAGS \
+                --program-prefix=g \
+                --prefix=$install_prefix
+
+unzip_and_build $tar_pkg \
+                CC=$CC CXX=$CXX \
+                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
+                LDFLAGS=$LDFLAGS \
+                --program-prefix=g \
+                --prefix=$install_prefix
+                
