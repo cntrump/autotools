@@ -8,6 +8,8 @@ Build and install autotools on macOS without any package managers.
 - [gettext](https://www.gnu.org/software/gettext/)
     - depend on [bison](https://www.gnu.org/software/bison/) 
 - [pkg-config](https://gitlab.freedesktop.org/pkg-config/pkg-config)
+- [patch](https://savannah.gnu.org/projects/patch/)
+- [tar](https://ftp.gnu.org/gnu/tar/)
 
 ## Build and install
 
