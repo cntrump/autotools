@@ -18,10 +18,9 @@ gettext_pkg="gettext-0.21"
 patch_pkg="patch-2.7.6"
 tar_pkg="tar-1.34"
 
-SDKROOT=`xcrun --sdk macosx --show-sdk-path`
-CFLAGS="-arch arm64 -arch x86_64 -flto=thin -fembed-bitcode -mmacosx-version-min=10.9 --sysroot=${SDKROOT}"
+export SDKROOT=`xcrun --sdk macosx --show-sdk-path`
+CFLAGS="-target apple-macosx10.15 -arch arm64 -arch x86_64 -flto=thin -fembed-bitcode"
 CXXFLAGS="${CFLAGS}"
-LDFLAGS="-flto=thin -fembed-bitcode -mmacosx-version-min=10.9 --sysroot=${SDKROOT}"
 CC=clang
 CXX=clang++
 
@@ -60,6 +59,7 @@ unzip_and_build $bison_pkg \
                 CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
                 LDFLAGS=$LDFLAGS \
                 M4=m4 \
+                --without-libtextstyle-prefix \
                 --prefix=$install_prefix
 
 unzip_and_build $gettext_pkg \
