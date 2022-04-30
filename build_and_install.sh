@@ -32,7 +32,7 @@ unzip_and_build() {
   args=("$@")
   ./configure ${args[@]:1}
   make -j
-  sudo make install
+  make install
   popd
 }
 
@@ -63,9 +63,11 @@ pushd pkg-config
 ./autogen.sh --no-configure
 ./configure --with-internal-glib \
             --enable-shared=no \
+            --disable-debug \
+            --disable-host-tool \
             --prefix=$install_prefix
 make -j
-sudo make install
+make install
 popd
 
 unzip_and_build $patch_pkg \
