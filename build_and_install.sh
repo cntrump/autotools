@@ -1,8 +1,15 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-set -e
+set -eux
 
-install_prefix=$INSTALL_PREFIX
+export DEVELOPER_DIR=$(xcode-select -p)
+export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+export CC=$(xcrun --find clang)
+export CXX=$(xcrun --find clang++)
+export CFLAGS="-target apple-macosx10.9 -arch arm64 -arch x86_64"
+export CXXFLAGS="${CFLAGS}"
+
+install_prefix=$1
 if [ "$install_prefix" = "" ]; then
   install_prefix=/usr/local
 fi
@@ -18,13 +25,8 @@ gettext_pkg="gettext-0.21"
 patch_pkg="patch-2.7.6"
 tar_pkg="tar-1.34"
 
-export SDKROOT=`xcrun --sdk macosx --show-sdk-path`
-CFLAGS="-target apple-macosx10.15 -arch arm64 -arch x86_64 -flto=thin -fembed-bitcode"
-CXXFLAGS="${CFLAGS}"
-CC=clang
-CXX=clang++
-
 unzip_and_build() {
+  [ -d $1 ] && rm -rf $1
   tar xvf $1$suffix
   pushd $1
   args=("$@")
@@ -34,38 +36,21 @@ unzip_and_build() {
   popd
 }
 
-unzip_and_build $autoconf_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
-                --prefix=$install_prefix
+unzip_and_build $autoconf_pkg --prefix=$install_prefix
 
-unzip_and_build $automake_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
-                --prefix=$install_prefix
+unzip_and_build $automake_pkg --prefix=$install_prefix
 
 unzip_and_build $libtool_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
                 --program-prefix=g \
                 --enable-shared=no \
                 --prefix=$install_prefix
 
 unzip_and_build $bison_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
                 M4=m4 \
                 --without-libtextstyle-prefix \
                 --prefix=$install_prefix
 
 unzip_and_build $gettext_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
                 --disable-java \
                 --enable-shared=no \
                 --prefix=$install_prefix
@@ -76,10 +61,7 @@ export LIBTOOLIZE=glibtoolize
 git clone --depth=1 https://gitlab.freedesktop.org/pkg-config/pkg-config.git pkg-config
 pushd pkg-config
 ./autogen.sh --no-configure
-./configure CC=$CC CXX=$CXX \
-            CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-            LDFLAGS=$LDFLAGS \
-            --with-internal-glib \
+./configure --with-internal-glib \
             --enable-shared=no \
             --prefix=$install_prefix
 make -j
@@ -87,16 +69,9 @@ sudo make install
 popd
 
 unzip_and_build $patch_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
                 --program-prefix=g \
                 --prefix=$install_prefix
 
 unzip_and_build $tar_pkg \
-                CC=$CC CXX=$CXX \
-                CFLAGS=$CFLAGS CXXFLAGS=$CXXFLAGS \
-                LDFLAGS=$LDFLAGS \
                 --program-prefix=g \
                 --prefix=$install_prefix
-                
