@@ -11,14 +11,12 @@ jobs:
   macOS:
     name: Build on  macOS
     runs-on: macos-latest
-    env:
-      INSTALL_PREFIX: /opt/local
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Build
-        run: ./build_and_install.sh
+        run: ./build_and_install.sh ~/.local
       - name: Test
         run: |
-            ls $INSTALL_PREFIX/bin
-            ls $INSTALL_PREFIX/lib
+            ls ~/.local/bin
+            ls ~/.local/lib
